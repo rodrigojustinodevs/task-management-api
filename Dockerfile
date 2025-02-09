@@ -37,7 +37,7 @@ RUN apt-get update \
     && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
 # Install PostgreSQL support (pdo_pgsql)
-RUN docker-php-ext-install pdo_pgsql  # Instala a extensão pdo_pgsql
+RUN docker-php-ext-install pdo_pgsql
 
 # Install the GD extension and other required extensions
 RUN apt-get update \
