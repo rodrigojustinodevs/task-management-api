@@ -5,9 +5,15 @@ services:
     container_name: task-management-api
     image: task-management-api
     restart: unless-stopped
+    mem_limit: 512m
+    deploy:
+      resources:
+        limits:
+          memory: 512M
     working_dir: /var/www/
     volumes:
       - ./:/var/www
+      - ./storage:/var/www/storage
     environment:
       - DB_CONNECTION=pgsql
       - DB_HOST=postgres
