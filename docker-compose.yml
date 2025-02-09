@@ -1,0 +1,68 @@
+version: '3.7'
+
+services:
+  app:
+    container_name: task-management-api
+    image: task-management-api
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+    environment:
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - REDIS_HOST=redis
+      - QUEUE_CONNECTION=redis
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - task-management-api
+
+  nginx:
+    container_name: task-management-api-nginx
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "8004:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/:/etc/nginx/conf.d/
+    networks:
+      - task-management-api
+
+  postgres:
+    container_name: postgres
+    image: postgres:13
+    environment:
+      POSTGRES_DB: laravel
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: laravel
+    volumes:
+      - ./.docker/postgres/dbdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - task-management-api
+
+  queue:
+    container_name: task-management-api-queue
+    image: task-management-api
+    restart: unless-stopped
+    command: "php artisan queue:work"
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - redis
+    networks:
+      - task-management-api
+
+  redis:
+    container_name: task-management-api-redis
+    image: redis:latest
+    networks:
+      - task-management-api
+
+networks:
+  task-management-api:
+    driver: bridge
