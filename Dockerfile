@@ -8,7 +8,7 @@ WORKDIR /var/www
 # Fix debconf warnings upon build
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Install selected extensions and other stuff
+# Install selected extensions and other dependencies
 RUN apt-get update \
     && apt-get -y --no-install-recommends install \
     build-essential \
@@ -36,14 +36,17 @@ RUN apt-get update \
     libfreetype6-dev \
     && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
-# Install the gd extension and other required extensions
+# Install PostgreSQL support (pdo_pgsql)
+RUN docker-php-ext-install pdo_pgsql
+
+# Install the GD extension and other required extensions
 RUN apt-get update \
     && apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
     && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
-    && docker-php-ext-install intl sodium pdo_pgsql pdo zip exif pcntl bcmath
+    && docker-php-ext-install intl sodium pdo zip exif pcntl bcmath
 
-# Get latest Composer
+# Get the latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Add user for Laravel application
@@ -65,4 +68,5 @@ RUN composer update && composer install --optimize-autoloader --no-dev
 # Expose port 80
 EXPOSE 80
 
+# Set the default command to run PHP-FPM
 CMD ["php-fpm"]

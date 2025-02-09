@@ -45,6 +45,10 @@ class Kernel extends HttpKernel
         ],
     ];
 
+    protected $routeMiddleware = [
+        'auth.jwt' => \App\GraphQL\Middleware\AuthMiddleware::class,
+    ];
+
     /**
      * The application's middleware aliases.
      *
