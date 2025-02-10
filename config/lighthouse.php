@@ -63,6 +63,11 @@ return [
 
     'guards' => null,
 
+    'route' => [
+        'middleware' => ['api', 'auth:api'],
+    ],
+
+
     /*
     |--------------------------------------------------------------------------
     | Schema Path
@@ -96,6 +101,10 @@ return [
          * File path to store the lighthouse schema.
          */
         'path' => env('LIGHTHOUSE_SCHEMA_CACHE_PATH', base_path('bootstrap/cache/lighthouse-schema.php')),
+    ],
+
+    'scalars' => [
+        'DateTime' => \Nuwave\Lighthouse\Schema\Types\Scalars\DateTime::class,
     ],
 
     /*

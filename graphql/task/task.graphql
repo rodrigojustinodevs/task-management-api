@@ -1,0 +1,35 @@
+type UserRelation {
+    id: ID!
+    name: String!
+}
+
+type Task {
+    id: ID!
+    title: String!
+    description: String!
+    status: String!
+    created_at: String
+    updated_at: String
+    user: UserRelation! @belongsTo
+}
+
+type Query {
+    tasks(id: ID, title: String): [Task]! @guard @field(resolver: "App\\GraphQL\\Queries\\TasksQuery@resolve")
+}
+
+type Mutation {
+    createTask(
+        title: String! @rules(apply: ["required"])
+        description: String! @rules(apply: ["required"])
+        status: String! @rules(apply: ["in:pending,in_progress,complete"])
+    ): Task @field(resolver: "App\\GraphQL\\Mutations\\CreateTaskMutation@resolve")
+
+    updateTask(
+        id: ID! @rules(apply: ["exists:tasks,id"])
+        title: String
+        description: String
+        status: String @rules(apply: ["in:pending,in_progress,complete"])
+    ): Task @guard @field(resolver: "App\\GraphQL\\Mutations\\UpdateTaskMutation@resolve")
+
+    deleteTask(id: ID! @rules(apply: ["exists:tasks,id"])): Task @guard @field(resolver: "App\\GraphQL\\Mutations\\DeleteTaskMutation@resolve")
+}

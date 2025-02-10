@@ -46,7 +46,8 @@ class Kernel extends HttpKernel
     ];
 
     protected $routeMiddleware = [
-        'auth.jwt' => \App\GraphQL\Middleware\AuthMiddleware::class,
+        'auth.jwt' => \Illuminate\Auth\Middleware\Authenticate::class,
+        'auth.api' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
     ];
 
     /**
