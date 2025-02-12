@@ -13,16 +13,31 @@ type Task {
     user: UserRelation! @belongsTo
 }
 
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    password: String
+    tasks: [Task!]! @hasMany
+}
+
+
 type Query {
     tasks(id: ID, title: String): [Task]! @guard @field(resolver: "App\\GraphQL\\Queries\\TasksQuery@resolve")
 }
 
 type Mutation {
+    createUser(
+        name: String! @rules(apply: ["required"])
+        email: String! @rules(apply: ["required"])
+        password: String! @rules(apply: ["required"])
+    ): User @field(resolver: "App\\GraphQL\\Mutations\\CreateUserMutation@resolve")
+
     createTask(
         title: String! @rules(apply: ["required"])
         description: String! @rules(apply: ["required"])
         status: String! @rules(apply: ["in:pending,in_progress,complete"])
-    ): Task @field(resolver: "App\\GraphQL\\Mutations\\CreateTaskMutation@resolve")
+    ): Task @guard @field(resolver: "App\\GraphQL\\Mutations\\CreateTaskMutation@resolve")
 
     updateTask(
         id: ID! @rules(apply: ["exists:tasks,id"])

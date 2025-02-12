@@ -64,7 +64,10 @@ return [
     'guards' => null,
 
     'route' => [
-        'middleware' => ['api', 'auth:api'],
+        'middleware' => [
+            'api',
+            // 'auth:api'
+        ],
     ],
 
 
